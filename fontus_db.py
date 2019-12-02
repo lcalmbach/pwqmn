@@ -31,7 +31,7 @@ def read_stations():
 
 @st.cache
 def read_parameters():
-    result = pd.read_csv(r"data\PWQMN_Parameters.txt",sep='\t',encoding = "ISO-8859-1")
+    result = pd.read_csv(r"data/PWQMN_Parameters.txt",sep='\t',encoding = "ISO-8859-1")
     return result
 
 def get_rivers(df):
