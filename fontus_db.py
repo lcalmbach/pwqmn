@@ -17,7 +17,7 @@ def init():
 
 @st.cache
 def read_samples():
-    df = pd.read_csv(r"data/pwqmn_chemistry_data.txt",sep='\t',encoding = "ISO-8859-1", float_precision='high')
+    df = pd.read_csv(r"data/pwqmn_chemistry_data.txt", sep='\t',encoding = "ISO-8859-1", float_precision='high')
     df['SAMPLE_DATE'] = pd.to_datetime(df['SAMPLE_DATE'])
     df['MONTH'] = df['SAMPLE_DATE'].dt.month
     df['YEAR'] = df['SAMPLE_DATE'].dt.year
@@ -25,13 +25,13 @@ def read_samples():
 
 @st.cache
 def read_stations():
-    result = pd.read_csv(r"data/pwqmn_stations.txt",sep='\t', encoding = "ISO-8859-1", float_precision = 'round_trip')
+    result = pd.read_csv(r"data/pwqmn_stations.txt", sep='\t', encoding = "ISO-8859-1", float_precision = 'round_trip')
     result.set_index("STATION_NAME", inplace = True)
     return result
 
 @st.cache
 def read_parameters():
-    result = pd.read_csv(r"data/PWQMN_Parameters.txt",sep='\t',encoding = "ISO-8859-1")
+    result = pd.read_csv(r"data/pwqmn_parameters.txt", sep='\t',encoding = "ISO-8859-1")
     return result
 
 def get_rivers(df):
