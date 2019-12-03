@@ -4,9 +4,7 @@
 This application allows to visualize water quality data from the Ontario Provincial (Stream) Water Quality Monitoring Network (PWQMN). The monitoring data includes data from various surface water bodies (rivers, creeks, lakes). The current dataset comprises %stations% stations and %parameters% parameters. A sampling event is considered the collection of measurements on the same date at the same sampling location. There are currently %samples% in the dataset. Most samples do only include few analysis as is shown in the parameters summary. The original dataset can be downloaded from [here](https://www.ontario.ca/data/provincial-stream-water-quality-monitoring-network "download data").
 
 ### Navigation and Filters
-Various filters allow to interact with the plots. data can be filtered by
-
-Stations: select ddd
+Various filters allow to interact with the plots. The filters are enabled on the sideboard, by checking the filter by year and month checkboxes. The stations filter becomes available, if only one surface water body is selected from the multi select box on the sideboard. You may either select <all stations> or a specific station and the plot will rerender based on the selection. In this case, an additional link to Google map will appear, allowing to navigate to the sampling location. In most cases it is possible virtually visite the site using the street view tool.
 
 ![screenshot yearly filter](https://github.com/lcalmbach/pwqmn/raw/master/static/images/scatter_filter_year.png)
 

@@ -21,13 +21,24 @@ def init():
         #help_content = [x.strip() for x in help_content]
 
 def print_info(dfStations, dfParameters, dfSamples):
+
+    st.markdown([background]())
     st.markdown(dfTexts.loc[dfTexts.key == 'PAR001', 'text'].values[0])
     st.markdown(dfTexts.loc[dfTexts.key == 'PAR002', 'text'].values[0])
     
-    st.markdown('Summary of data available in the dataset:')
+    st.markdown('### Summary of data available in the dataset:')
     st.markdown('* Number of stations: {0}'.format(len(dfStations.index)))
     st.markdown('* Number of parameters: {0}'.format(len(dfParameters.index)))
     st.markdown('* Number of sampling events: {0}'.format(db.number_of_samples))
+    st.markdown('* Data last modified: {0}'.format(cn.data_last_modified)) 
+
+    st.markdown('### Metadata from data owner:')
+    st.markdown('* Publisher: Environment, Conservation and Parks')
+    st.markdown('* Ontario Time captured: January 1, 1964 – December 31, 2016')
+    st.markdown('* Update frequency: Yearly')
+    st.markdown('* Geographical coverage: Ontario')
+    st.markdown('* Technical documentation: [Metadata Record](https://www.javacoeapp.lrc.gov.on.ca/geonetwork/srv/en/metadata.show?id=13826)')  
+
 
 def print_help():
     st.markdown(help_content,unsafe_allow_html=True)
