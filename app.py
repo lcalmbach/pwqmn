@@ -3,10 +3,12 @@ import pandas as pd
 import numpy as np
 import time
 import altair as alt
-import plots as plt
-import fontus_db as db
+
+import constants as cn
 import fontus_texts as info
-import stations, parameters
+import fontus_db as db
+import plots as plt
+import stations, parameters, samples
 
 rivers = list()
 dfSamples = pd.DataFrame
@@ -17,7 +19,7 @@ info.init()
 plot_type_list = ['scatter plot','time series','histogram','boxplot'] #, 'schoeller', 'map',
 group_by_list = ['station','year','month']
 months_list = ['<all>','1','2','3','4','5','6','7','8','9','10','11','12']
-menu_list = ['Home', 'Station information', 'Parameters information', 'Plotting']
+menu_list = ['Plotting', 'Station information', 'Parameters information', 'Help', 'About']
 year_min = 1994 # todo! make dynamic
 year_max = 2016 # todo! make dynamic
 month_sel = 0
@@ -45,19 +47,19 @@ dfParameters = db.dfParameters
 rivers_list = db.get_rivers(dfStations)
 stations_list = db.get_stations
 parameters_list = parameters.get_parameters(dfParameters)
-st.header('Ontario Provincial (Stream) Water Quality Monitoring Network Data 1964 - 2014')
-#lnk = '[PMNWQ Home](https://www.ontario.ca/data/provincial-stream-water-quality-monitoring-network "download data")'
-#st.markdown(lnk)
-
-st.sidebar.subheader('PWQMN-Browser')
 
 #sidebar
-menu_sel = st.sidebar.selectbox('Menu', menu_list)
+st.sidebar.header('Menu')
+menu_sel = st.sidebar.radio('', menu_list, index=4, key=None) # format_func=<class 'str'>, 
 st.sidebar.markdown('---')
 
-if menu_sel == 'Home':
+if menu_sel == 'About':
+    st.header('Ontario Provincial (Stream) Water Quality Monitoring Network Data 1964 - 2014')
     info.print_info(dfStations, dfParameters, dfSamples)
+elif menu_sel == 'Help':
+    info.print_help()
 elif menu_sel == 'Station information':
+    st.header(menu_sel)
     stations.init(dfStations)
     #sidebar menu
     all_rivers_sel = st.sidebar.checkbox('All stations', value=False, key=None)
@@ -67,6 +69,7 @@ elif menu_sel == 'Station information':
     df = stations.get_table(all_rivers_sel, rivers_sel)
     st.write(df)
 elif menu_sel == 'Parameters information':
+    st.header(menu_sel)
     parameters.init(dfParameters, dfSamples)
     #sidebar menu
     all_rivers_sel = st.sidebar.checkbox('All stations', value=False, key=None)
@@ -75,8 +78,8 @@ elif menu_sel == 'Parameters information':
     # content
     df = parameters.get_table(all_rivers_sel, rivers_sel)
     st.write(df)
-
 elif menu_sel == 'Plotting':
+    st.header(menu_sel)
     plot_type_sel = st.sidebar.selectbox('Plot type', plot_type_list)
     if plot_type_sel not in ['time series']:
         group_by_sel = st.sidebar.selectbox('Group by', pd.Series(group_by_list))
@@ -84,15 +87,15 @@ elif menu_sel == 'Plotting':
 
     parameters_list = parameters.get_sample_parameters(rivers_sel)
     if plot_type_sel not in ['time series', 'histogram', 'boxplot']:
-        xpar_sel = parameters.get_parameter_key(st.sidebar.selectbox('X-parameter', parameters_list))
-    ypar_sel = parameters.get_parameter_key(st.sidebar.selectbox('Y-parameter', parameters_list))
+        xpar_sel = parameters.get_parameter_key(st.sidebar.selectbox('X-parameter', parameters_list, index = 0))
+    ypar_sel = parameters.get_parameter_key(st.sidebar.selectbox('Y-parameter', parameters_list, index = 1))
     if plot_type_sel not in ['time series']:
         filter_month_sel = st.sidebar.checkbox('Filter data by month', value=False, key=None)
         if filter_month_sel:
-            month_sel = st.sidebar.slider('Month', min_value = 0, max_value = 12, value=None)
+            month_sel = st.slider('Month', min_value = 0, max_value = 12, value=None)
         filter_year_sel = st.sidebar.checkbox('Filter data by year', value=False, key=None)
         if filter_year_sel:
-            year_sel = st.sidebar.slider('Year', min_value = year_min, max_value = year_max, value=None)
+            year_sel = st.slider('Year', min_value = year_min, max_value = year_max, value=None)
 
     define_axis_limits = st.sidebar.checkbox('Define axis limits', value=False, key=None)
     if define_axis_limits:
@@ -121,10 +124,8 @@ elif menu_sel == 'Plotting':
                     if not show_all_stations:
                         dfRiver = dfRiver[(dfRiver['STATION_NAME'] == stations_sel)]
                         plot_title += ': ' + stations_sel
-
                 plot_results_list = plt.plot(plot_title, dfRiver)
                 st.write(plot_results_list[0].properties(width = plot_width, height = plot_height))
-                
                 # if a station has been selected display a link to visit site on google maps
                 if not show_all_stations and len(rivers_sel) == 1:
                     lat = dfStations.at[stations_sel,'lat']

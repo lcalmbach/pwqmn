@@ -6,8 +6,8 @@ import altair as alt
 import fontus_db as db
 
 plot_type = 'scatter plot'
-xpar = '567'
-ypar = '123'
+xpar = ''
+ypar = ''
 group_by = ''
 max_x = -99
 max_y = -99
@@ -155,7 +155,7 @@ def plot_time_series(plt_title, source):
     else:
         scy = alt.Scale(domain=(min_y, max_y))
 
-    base = alt.Chart(source, title = plt_title).mark_line(point = True).encode(
+    base = alt.Chart(source, title = plt_title).mark_line(point = True, clip=True).encode(
         x = alt.X('SAMPLE_DATE:T',
             axis=alt.Axis(title='')),
         y = alt.Y('RESULT:Q',
@@ -171,14 +171,19 @@ def plot_time_series(plt_title, source):
     result.append(source)
     return result
 
-def plot_scatter(plt_title, df): 
+def plot_scatter(plt_title, df):
     result = []
-    x_lab = get_label(xpar)
-    y_lab = get_label(ypar)
+    # remove value < 0
+    df = df.reset_index()
+    df = df[(df['PARM'].isin([xpar, ypar]))]
     df = get_pivot_data(df)
     if set([xpar, ypar]).issubset(df.columns):
-        df = df[(df[xpar] > 0) & (df[ypar] > 0)]
+        #filter for non values
+        #df = df[(df[xpar] != np.isnan) & (df[ypar] != np.isnan)] 
+        df = df[(df[xpar] > 0) & (df[ypar] > 0)] 
         df = df.reset_index()
+        x_lab = get_label(xpar)
+        y_lab = get_label(ypar)
 
         if max_x == min_x:
             scx = alt.Scale()
@@ -190,7 +195,7 @@ def plot_scatter(plt_title, df):
         else:
             scy = alt.Scale(domain=(min_y, max_y))
 
-        base = alt.Chart(df, title = plt_title).mark_circle(size=60).encode(
+        base = alt.Chart(df, title = plt_title).mark_circle(size=60, clip=True).encode(
             x = alt.X(xpar + ':Q',
                 scale = scx,
                 axis = alt.Axis(title = x_lab)),
@@ -203,8 +208,9 @@ def plot_scatter(plt_title, df):
             tooltip=['SAMPLE_DATE', group_by_dic[group_by], xpar, ypar]
         )
     else:
-        base = alt.Chart(df, title = plt_title).mark_circle(size = 60).encode()
-    
+        dfEmpty = pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]})
+        base = alt.Chart(dfEmpty, title = plt_title).mark_circle(size = 60).encode()
+
     result.append(base)
     result.append(df)
     return result

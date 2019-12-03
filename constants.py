@@ -1,0 +1,5 @@
+text_path = r'static/text/'
+images_path = r'static/images/'
+css_path = r'static/css/'
+data_path = r'static/data/'
+version = '0.0.1'
