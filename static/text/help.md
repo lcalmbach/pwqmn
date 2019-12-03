@@ -36,7 +36,10 @@ The stations table includes the following columns:
 * RIVER_NAME:   name of the river or lake
 * STATION_NAME: station name. Note that the original PWQMN station names do not include the prefix 'S-' which was added for this applications. Without the prefix, the names were sometimes converted to numbers and the trailing zeros removed.
 * LOCATION: description of the sampling location
-* STATUS: Status of the station: I for inactive and A for active.
+* STATUS: status of the station: I for inactive and A for active.
+* FIRSTYR: first year of sampling at this station
+* LASTYR: last year of sampling at this station
+* Missing: number of year without sampling
 
 If no surface water body is selected, all stations in the dataset are listed. If a water body is selected, only stations of this water body are listed. Getting a clearer picture on which stations are available may save you time later, when plotting the data.
 

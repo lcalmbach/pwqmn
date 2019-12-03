@@ -4,6 +4,7 @@ import numpy as np
 import time
 import altair as alt
 import fontus_db as db
+import app
 
 plot_type = 'scatter plot'
 xpar = ''
@@ -13,10 +14,11 @@ max_x = -99
 max_y = -99
 min_x = -99
 min_y = -99
+bin_size = 0 
 group_by_dic = {'station':'STATION_NAME','month':'MONTH','year':'YEAR'}
 color_schema = "set1" # https://vega.github.io/vega/docs/schemes/#reference
 
-def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, min_x_sel, min_y_sel):
+def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, min_x_sel, min_y_sel,bin_size_sel):
     global xpar
     global ypar
     global group_by
@@ -25,6 +27,7 @@ def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, 
     global min_x
     global min_y
     global plot_type
+    global bin_size
 
     plot_type = plot_type_sel
     xpar = xpar_sel
@@ -34,6 +37,7 @@ def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, 
     max_y = max_y_sel
     min_x = min_x_sel
     min_y = min_y_sel
+    bin_size = bin_size_sel
 
 def get_pivot_data(df):
     if group_by == 'station':
@@ -107,9 +111,15 @@ def plot_histogram(plt_title, df):
         scx = alt.Scale()
     else:
         scx = alt.Scale(domain=(min_x, max_x))
+    #use bin width if user defined
+    if bin_size > 0:
+        bin_def = alt.Bin(step = bin_size)
+    else:
+        bin_def = alt.Bin()
 
     base = alt.Chart(df, title = plt_title).mark_bar().encode(
-        alt.X("RESULT:Q", bin=True, title = x_lab, scale = scx),
+        alt.X("RESULT:Q", bin = bin_def, title = x_lab, scale = scx),
+        
         y = 'count()',
     )
     result.append(base)

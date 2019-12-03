@@ -10,6 +10,8 @@ number_of_samples = 0
 number_of_stations = 0
 number_of_parameters = 0
 dfSamples_all = pd.DataFrame
+first_year = 0
+last_year = 0
 
 def init():
     import app
@@ -20,6 +22,8 @@ def init():
     global number_of_samples
     global number_of_stations
     global number_of_parameters
+    global first_year
+    global last_year
 
     dfSamples = read_samples()
     dfStations = read_stations()
@@ -28,6 +32,8 @@ def init():
     number_of_samples = get_number_of_samples(dfSamples)
     number_of_stations = len(dfStations.index)
     number_of_parameters = len(dfParameters.index)
+    first_year = dfSamples['YEAR'].min()
+    last_year = dfSamples['YEAR'].max()
 
 @st.cache
 def read_samples():

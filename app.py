@@ -10,6 +10,7 @@ import fontus_db as db
 import plots as plt
 import stations, parameters, samples
 
+bin_size_sel = 0    #width of bin for histograms
 rivers = list()
 dfSamples = pd.DataFrame
 dfStations = pd.DataFrame
@@ -95,8 +96,9 @@ elif menu_sel == 'Plotting':
             month_sel = st.slider('Month', min_value = 0, max_value = 12, value=None)
         filter_year_sel = st.sidebar.checkbox('Filter data by year', value=False, key=None)
         if filter_year_sel:
-            year_sel = st.slider('Year', min_value = year_min, max_value = year_max, value=None)
-
+            year_sel = st.slider('Year', min_value = db.first_year, max_value = db.last_year, value=None)
+    if plot_type_sel == 'histogram':
+        bin_size_sel = st.sidebar.number_input('Bin width')
     define_axis_limits = st.sidebar.checkbox('Define axis limits', value=False, key=None)
     if define_axis_limits:
         if plot_type_sel not in ['time series']:
@@ -106,7 +108,7 @@ elif menu_sel == 'Plotting':
         max_y_sel = st.sidebar.number_input('Maximum y')
 
     show_data_sel = st.sidebar.checkbox('Show detail data', value = False, key = None)
-    plt.init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, min_x_sel, min_y_sel)
+    plt.init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, min_x_sel, min_y_sel, bin_size_sel)
     if plot_type_sel != 'map':
         for riv in rivers_sel:
             dfRiver = dfSamples[(dfSamples['RIVER_NAME'] == riv)]
