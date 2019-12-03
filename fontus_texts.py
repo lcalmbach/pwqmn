@@ -22,7 +22,7 @@ def init():
 
 def print_info(dfStations, dfParameters, dfSamples):
 
-    st.markdown([background]())
+    st.markdown('![title pic](https://github.com/lcalmbach/pwqmn/raw/master/static/images/river_background.png)')
     st.markdown(dfTexts.loc[dfTexts.key == 'PAR001', 'text'].values[0])
     st.markdown(dfTexts.loc[dfTexts.key == 'PAR002', 'text'].values[0])
     
