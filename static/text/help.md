@@ -8,7 +8,7 @@ Various filters allow to interact with the plots. data can be filtered by
 
 Stations: select ddd
 
-![screenshot yearly filter](icon48.png)
+![screenshot yearly filter](https://github.com/lcalmbach/pwqmn/raw/master/static/images/scatter_filter_year.png)
 
 ### Menu 
 #### Plotting
