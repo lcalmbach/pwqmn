@@ -5,7 +5,7 @@ import time
 import altair as alt
 
 import constants as cn
-import fontus_texts as info
+import fontus_texts as txt
 import fontus_db as db
 import plots as plt
 import stations, parameters, samples
@@ -15,7 +15,7 @@ rivers = list()
 dfSamples = pd.DataFrame
 dfStations = pd.DataFrame
 year = 0
-info.init()
+txt.init()
 
 plot_type_list = ['scatter plot','time series','histogram','boxplot'] #, 'schoeller', 'map',
 group_by_list = ['station','year','month']
@@ -55,10 +55,9 @@ menu_sel = st.sidebar.radio('', menu_list, index=4, key=None) # format_func=<cla
 st.sidebar.markdown('---')
 
 if menu_sel == 'About':
-    st.header('Ontario Provincial (Stream) Water Quality Monitoring Network Data 1964 - 2014')
-    info.print_info(dfStations, dfParameters, dfSamples)
+    txt.print_main_about(dfStations, dfParameters, dfSamples)
 elif menu_sel == 'Help':
-    info.print_help()
+    txt.print_help()
 elif menu_sel == 'Station information':
     st.header(menu_sel)
     stations.init(dfStations)
@@ -68,7 +67,14 @@ elif menu_sel == 'Station information':
         rivers_sel = st.sidebar.multiselect(label = 'Surface water body', default = ('Grand River',), options = pd.Series(rivers_list).tolist()) 
     # content
     df = stations.get_table(all_rivers_sel, rivers_sel)
-    st.write(df)
+    df.reset_index(inplace = True) #needed so station_name can be selected on plotly table
+    values =[df.STATION_NAME, df.RIVER_NAME, df.LOCATION, df.lon, df.lat, df.STATUS, df.FIRST_YR, df.LAST_YR, df.TOTAL_YRS, df.MISS_YRS]
+    txt.show_table(df,values)
+    if not all_rivers_sel:
+        text = "This list only includes stations from the selected surface water bodies."
+    else:
+        text = "This list includes all stations of the monitoring network."
+    st.markdown(text)
 elif menu_sel == 'Parameters information':
     st.header(menu_sel)
     parameters.init(dfParameters, dfSamples)
@@ -78,7 +84,14 @@ elif menu_sel == 'Parameters information':
         rivers_sel = st.sidebar.multiselect(label = 'Surface water body', default = ('Grand River',), options = pd.Series(rivers_list).tolist()) 
     # content
     df = parameters.get_table(all_rivers_sel, rivers_sel)
-    st.write(df)
+    df = df[['PARM', 'PARM_DESCRIPTION', 'DESCRIPTION']]
+    values = [df.PARM, df.PARM_DESCRIPTION, df.DESCRIPTION]
+    txt.show_table(df,values)
+    if not all_rivers_sel:
+        text = "This parameter list only includes parameters having been measured in the selected rivers or lakes."
+    else:
+        text = "This parameter list includes all parameters having been measured in the monitoring network."
+    st.markdown(text)
 elif menu_sel == 'Plotting':
     st.header(menu_sel)
     plot_type_sel = st.sidebar.selectbox('Plot type', plot_type_list)
@@ -139,3 +152,5 @@ elif menu_sel == 'Plotting':
                     st.dataframe(plot_results_list[1])
     else:
         plot('', dfStations)
+st.sidebar.markdown('---')
+txt.info_sideboard('ABOUT')
