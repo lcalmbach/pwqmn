@@ -126,30 +126,35 @@ def plot_histogram(plt_title, df):
     result.append(df)
     return result
 
-def plot_map(plt_title, df): 
-    df = df[(df['STATION_NAME'] == 19006403102)]
-    df1 = pd.DataFrame(
-        np.random.randn(1000, 2) / [50, 50] + [46., -86.5],
-        columns=['lat', 'lon']
-    )
-    #df = df[['LATITUDE','LONGITUDE']]
-    #df = df.rename(index=str, columns={"LATITUDE": "lat", "LONGITUDE": "lon"})
+def plot_map(df): 
+    #df = df[(df['STATION_NAME'] == 19006403102)]
+    #df = pd.DataFrame(
+    #   np.random.randn(1000, 2) / [50, 50] + [46., -80.5],
+    #    columns=['lat', 'lon']
+    #)
+    #df = db.dfStations
+    #df = df[df['RIVER_NAME'].isin(rivers_sel)]
+    #if df.count == 0:
+    #    df = dfStations
+
+    midpoint = (np.average(df['lat']), np.average(df['lon']))
     st.deck_gl_chart(
         viewport={
             "latitude": midpoint[0],
             "longitude": midpoint[1],
-            "zoom": 11,
-            "pitch": 10,
+            "zoom": 20,
+            "pitch": 0,
         },
         layers=[
             {
-                "type": "ScatterplotLayer",
-                "data": data,
-                "radius": 100,
-                "elevationScale": 4,
-                "elevationRange": [0, 10000],
-                "pickable": True,
-                "extruded": False,
+                'type': 'ScatterplotLayer',
+                'data': df,
+                'radiusScale': 10,
+                'radiusMinPixels': 5,
+                'radiusMaxPixels': 15,
+                'elevationScale': 4,
+                'elevationRange': [0, 10000],
+                'getFillColor': [255,0,0]
             }
         ],
     )

@@ -17,12 +17,10 @@ dfStations = pd.DataFrame
 year = 0
 txt.init()
 
-plot_type_list = ['scatter plot','time series','histogram','boxplot'] #, 'schoeller', 'map',
+plot_type_list = ['scatter plot','time series','histogram','boxplot','map'] #, 'schoeller', ,
 group_by_list = ['station','year','month']
 months_list = ['<all>','1','2','3','4','5','6','7','8','9','10','11','12']
-menu_list = ['Plotting', 'Station information', 'Parameters information', 'Help', 'About']
-year_min = 1994 # todo! make dynamic
-year_max = 2016 # todo! make dynamic
+menu_list = ['Plotting', 'Station information', 'Parameters information', 'Settings', 'Help', 'About']
 month_sel = 0
 year_sel = 0
 xpar_sel = ''
@@ -93,7 +91,6 @@ elif menu_sel == 'Parameters information':
         text = "This parameter list includes all parameters having been measured in the monitoring network."
     st.markdown(text)
 elif menu_sel == 'Plotting':
-    st.header(menu_sel)
     plot_type_sel = st.sidebar.selectbox('Plot type', plot_type_list)
     if plot_type_sel not in ['time series']:
         group_by_sel = st.sidebar.selectbox('Group by', pd.Series(group_by_list))
@@ -151,6 +148,18 @@ elif menu_sel == 'Plotting':
                 if show_data_sel:
                     st.dataframe(plot_results_list[1])
     else:
-        plot('', dfStations)
+        st.write(db.dfStations)
+        dfRiver = db.dfStations.reset_index(inplace = True)
+        st.write(dfRiver)
+        show_all_stations = True
+        if len(rivers_sel) == 0:
+            dfRiver = dfStation
+        elif len(rivers_sel) == 1:
+            st.write(dfRiver)
+            stations_sel = st.selectbox('Stations', pd.Series(db.get_stations(dfRiver)))
+            show_all_stations = (stations_sel == '<all stations>')
+            if not show_all_stations:
+                dfRiver = dfRiver[(dfRiver['STATION_NAME'] == stations_sel)]
+        plt.plot_map(dfRiver)
 st.sidebar.markdown('---')
 txt.info_sideboard('ABOUT')
