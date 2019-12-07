@@ -17,8 +17,9 @@ min_y = -99
 bin_size = 0 
 group_by_dic = {'station':'STATION_NAME','month':'MONTH','year':'YEAR'}
 color_schema = "set1" # https://vega.github.io/vega/docs/schemes/#reference
+bar_direction = ''
 
-def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, min_x_sel, min_y_sel,bin_size_sel):
+def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, min_x_sel, min_y_sel, bin_size_sel, bar_direction_sel):
     global xpar
     global ypar
     global group_by
@@ -28,7 +29,8 @@ def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, 
     global min_y
     global plot_type
     global bin_size
-
+    global bar_direction
+    
     plot_type = plot_type_sel
     xpar = xpar_sel
     ypar = ypar_sel
@@ -38,6 +40,7 @@ def init(plot_type_sel, xpar_sel, ypar_sel, group_by_sel, max_x_sel, max_y_sel, 
     min_x = min_x_sel
     min_y = min_y_sel
     bin_size = bin_size_sel
+    bar_direction = bar_direction_sel
 
 def get_pivot_data(df):
     if group_by == 'station':
@@ -56,17 +59,21 @@ def get_label(value):
     return  df.at[value, 'LABEL']
 
 def plot(plt_title, source):
-    if plot_type  == 'scatter plot':
+    if (plot_type  == 'scatter plot'):
         return plot_scatter(plt_title, source)
-    elif plot_type == 'time series':
+    elif (plot_type == 'time series'):
         return plot_time_series(plt_title, source)
-    elif plot_type == 'histogram':
+    elif (plot_type == 'histogram'):
         return plot_histogram(plt_title, source)
-    elif plot_type == 'boxplot':
+    elif (plot_type == 'box plot'):
         return plot_boxplot(plt_title, source)
-    elif plot_type == 'schoeller':
+    elif (plot_type == 'schoeller'):
         return plot_schoeller(plt_title, source)
-    elif plot_type == 'map':
+    elif (plot_type == 'bar chart' and bar_direction == 'horizontal'):
+        return plot_bar_h(plt_title, source)
+    elif (plot_type == 'bar chart' and bar_direction == 'vertical'):
+        return plot_bar_v(plt_title, source)
+    elif (plot_type == 'map'):
         plot_map(plt_title, source)
         return ''
     else:
@@ -106,6 +113,7 @@ def plot_histogram(plt_title, df):
     x_lab = get_label(ypar)
     df = df[(df['PARM'] == ypar) & (df['RESULT'] > 0)]
     df = df[['RESULT']]
+    brush = alt.selection(type='interval', encodings=['x'])
 
     if max_x == min_x:
         scx = alt.Scale()
@@ -122,7 +130,54 @@ def plot_histogram(plt_title, df):
         
         y = 'count()',
     )
+    
     result.append(base)
+    result.append(df)
+    return result
+
+def plot_bar_h(plt_title, df):
+    result = []
+    y_lab = get_label(ypar)
+    df = df[(df['PARM'] == ypar) & (df['RESULT'] > 0)]
+    #brush = alt.selection(type='interval', encodings=['x'])
+    if max_y == min_y:
+        scy = alt.Scale()
+    else:
+        scy = alt.Scale(domain=(min_y, max_y))
+
+    base = alt.Chart(data = df, title = plt_title).mark_bar().encode(
+        alt.Y(group_by_dic[group_by] + ':O', title = ''),
+        alt.X('mean(RESULT):Q', title = y_lab, scale = scy),
+    )
+
+    avg = alt.Chart(df).mark_rule(color='red').encode(
+        x='mean(RESULT):Q'
+    )
+    
+    result.append(base + avg)
+    result.append(df)
+    return result
+
+def plot_bar_v(plt_title, df):
+    result = []
+    y_lab = get_label(ypar)
+    df = df[(df['PARM'] == ypar) & (df['RESULT'] > 0)]
+    #brush = alt.selection(type='interval', encodings=['x'])
+    if max_y == min_y:
+        scy = alt.Scale()
+    else:
+        scy = alt.Scale(domain=(min_y, max_y))
+    
+    base = alt.Chart(data = df, title = plt_title).mark_bar().encode(
+        alt.X(group_by_dic[group_by] + ':O', title = ''),
+        alt.Y('mean(RESULT):Q', title = y_lab, scale = scy),
+    )
+
+    avg = alt.Chart(df).mark_rule(color='red').encode(
+        y = 'mean(RESULT):Q'
+    )
+    
+    result.append(base + avg)
     result.append(df)
     return result
 
@@ -187,15 +242,20 @@ def plot_time_series(plt_title, source):
     return result
 
 def plot_scatter(plt_title, df):
+    ok = False
     result = []
+
     # remove value < 0
     df = df.reset_index()
     df = df[(df['PARM'].isin([xpar, ypar]))]
     df = get_pivot_data(df)
-    if set([xpar, ypar]).issubset(df.columns):
+    ok = (set([xpar, ypar]).issubset(df.columns))
+
         #filter for non values
-        #df = df[(df[xpar] != np.isnan) & (df[ypar] != np.isnan)] 
-        df = df[(df[xpar] > 0) & (df[ypar] > 0)] 
+    if ok:
+        df = df[(df[xpar] > 0) & (df[ypar] > 0)]
+        ok = len(df) > 0
+    if ok:
         df = df.reset_index()
         x_lab = get_label(xpar)
         y_lab = get_label(ypar)
@@ -225,7 +285,8 @@ def plot_scatter(plt_title, df):
     else:
         dfEmpty = pd.DataFrame(data={'col1': [1, 2], 'col2': [3, 4]})
         base = alt.Chart(dfEmpty, title = plt_title).mark_circle(size = 60).encode()
-
+        df = []
+        
     result.append(base)
     result.append(df)
     return result

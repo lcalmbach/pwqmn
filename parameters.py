@@ -37,6 +37,7 @@ def get_sample_parameters(rivers_sel):
     # filter the parameter table to include only parameters from the filtered sample list
     result = db.dfParameters[(db.dfParameters['PARM'].isin(lst_par))]
     result = result.PARM_DESCRIPTION
+
     return result.tolist()
 
 # returns the key for a given parameter description. the lists hold parameter descriptions, so they are easier to understand
