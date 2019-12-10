@@ -32,6 +32,8 @@ def init():
     global number_of_parameters
     global first_year
     global last_year
+    global all_parameters_list
+    global all_rivers_list
 
     dfSamples = read_samples()
     dfStations = read_stations()

@@ -13,7 +13,7 @@ def init():
     global dfTexts
     global help_content
     dfTexts = pd.read_csv(cn.text_path + text_file,sep='\t', encoding = "ISO-8859-1")
-    dfTexts.set_index("key")
+    # dfTexts.set_index("key")
     with open(cn.text_path + helpfile) as f:
         help_content = f.read().replace('%version%', cn.version)
         help_content = help_content.replace('%samples%', str(db.number_of_samples))
