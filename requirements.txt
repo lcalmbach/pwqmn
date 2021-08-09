@@ -43,7 +43,7 @@ Pygments==2.4.2
 pyrsistent==0.15.5
 python-dateutil==2.8.0
 pytz==2019.1
-pywin32==227
+pywin32==301
 pywinpty==0.5.5
 pyzmq==18.1.1
 selenium==3.141.0
